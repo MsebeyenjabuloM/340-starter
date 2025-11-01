@@ -1,17 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include('../partials/head') %>
+  <%- include('../partials/head') %>
 
-<body>
-    <div id="wrapper">
+  <body>
+    <div id="page-wrapper">
+      
+
+      <div class="container content-block"> <!-- WHITE BOX that contains everything -->
+        
         <%- include('../partials/header') %>
         <%- include('../partials/navigation') %>
 
         <main>
-            <%- body %>
+          <%- body %>
         </main>
 
         <%- include('../partials/footer') %>
+      </div>
     </div>
-</body>
+  </body>
 </html>
