@@ -99,7 +99,10 @@ nav {
   font-weight: 500;
   transition: color 0.3s ease;
 }
-.main-nav a:hover { color: #222; text-decoration: underline; }
+.main-nav a:hover {
+  background-color: #fff;
+  color: var(--blue-1);
+}
 
 /* HERO */
 .hero {
@@ -175,6 +178,127 @@ nav {
 .reviews { background: linear-gradient(180deg, rgba(240,245,255,0.9), rgba(250,250,255,0.9)); padding:0.75rem; border-radius:8px; }
 .reviews h3 { color:var(--blue-1); margin-bottom:0.5rem; }
 .review-list { list-style:disc; margin-left:1rem; color:var(--muted); font-family:var(--font-alt); }
+
+
+
+/* Vehicle Listing Cards */
+
+.vehicle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.vehicle-card {
+  background: var(--card-white);
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  overflow: hidden;
+  padding: 1rem;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.vehicle-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.vehicle-card h2 {
+  font-size: 1.2rem;
+  margin-bottom: 0.8rem;
+  color: var(--blue-1);
+}
+
+.vehicle-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 0.8rem;
+}
+
+.vehicle-card .price {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #222;
+  margin-top: 0.5rem;
+}
+
+/* Responsive tweaks */
+@media screen and (max-width: 600px) {
+  .vehicle-card img {
+    height: 150px;
+  }
+}
+
+
+
+
+/* Individual Vehicle Detail Card */
+.vehicle-detail-card {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  background: var(--card-white);
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  margin-top: 2rem;
+}
+
+.vehicle-detail-card .vehicle-detail-image {
+  flex: 1 1 350px;
+  max-width: 500px;
+}
+
+.vehicle-detail-card .vehicle-detail-image img {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+  display: block;
+}
+
+.vehicle-detail-card .vehicle-detail-info {
+  flex: 1 1 300px;
+}
+
+.vehicle-detail-card h2 {
+  font-size: 1.4rem;
+  color: var(--blue-1);
+  margin-bottom: 0.8rem;
+}
+
+.vehicle-detail-card .price {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 0.8rem;
+}
+
+.vehicle-detail-card p {
+  margin-bottom: 0.6rem;
+  line-height: 1.5;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+/* Responsive: stack on phones */
+@media (max-width: 768px) {
+  .vehicle-detail-card {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .vehicle-detail-card .vehicle-detail-info {
+    width: 100%;
+  }
+}
+
 
 /* Footer */
 .site-footer { text-align:center; color:var(--muted); padding:0.75rem 0; border-top:1px solid rgba(0,0,0,0.04); }
