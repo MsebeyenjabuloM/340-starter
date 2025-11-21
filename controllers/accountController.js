@@ -32,15 +32,29 @@ const accountModel = require("../models/account-model")
 async function registerAccount(req, res, next) {
   try {
     let nav = await utilities.getNav()
-    const { account_firstname, account_lastname, account_email, account_password } = req.body
+    /*const { account_firstname, account_lastname, account_email, account_password } = req.body*/
+    const { 
+  account_firstname: first_name, 
+  account_lastname: last_name, 
+  account_email: email, 
+  account_password: password 
+} = req.body
+
 
     // call model to insert into DB
-    const regResult = await accountModel.registerAccount(
+    /*const regResult = await accountModel.registerAccount(
       account_firstname,
       account_lastname,
       account_email,
       account_password
-    )
+    ) */
+   const regResult = await accountModel.registerAccount(
+  first_name,
+  last_name,
+  email,
+  password
+)
+
 
     if (regResult) {
       req.flash("notice", `Congratulations, you're registered ${account_firstname}. Please log in.`)

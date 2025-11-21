@@ -3,12 +3,12 @@ const pool = require("../database/")
 /* *****************************
  *   Register new account
  * *************************** */
-async function registerAccount(account_firstname, account_lastname, account_email, account_password) {
+async function registerAccount(first_name, last_name, email, password) {
   try {
     const sql = `INSERT INTO public.account
-      (account_firstname, account_lastname, account_email, account_password, account_type)
+      (first_name, last_name, email, password, account_type)
       VALUES ($1, $2, $3, $4, 'Client') RETURNING *`
-    const result = await pool.query(sql, [account_firstname, account_lastname, account_email, account_password])
+    const result = await pool.query(sql, [first_name, last_name, email, password])
     return result.rows[0] // return the inserted row
   } catch (error) {
     console.error("registerAccount error: ", error)
