@@ -47,19 +47,25 @@ async function registerAccount(req, res, next) {
       password
     )
 
-    // ---- FIXED SUCCESS CHECK ----
-    if (regResult && regResult.rowCount === 1) {
+    // LOG for debugging (inspect what the model returned)
+    console.log("registerAccount -> regResult:", regResult)
+
+    // Consider success if regResult has a positive rowCount or rows length
+    const success =
+      (regResult && typeof regResult.rowCount === "number" && regResult.rowCount > 0) ||
+      (regResult && Array.isArray(regResult.rows) && regResult.rows.length > 0)
+
+    if (success) {
+      // use the first_name we collected earlier for the flash
       req.flash(
         "notice",
         `Congratulations, you're registered ${first_name}. Please log in.`
       )
-      return res.status(201).render("account/login", {
-        title: "Login",
-        nav,
-      })
+      // redirect to login so the flash message shows after a redirect
+      return res.status(201).redirect("/account/login")
     }
 
-    // ---- FAIL CASE ----
+    // FAIL CASE: re-render register with sticky fields (so user doesn't lose input)
     req.flash("notice", "Sorry, the registration failed.")
     return res.status(501).render("account/register", {
       title: "Register",
@@ -78,5 +84,6 @@ async function registerAccount(req, res, next) {
     })
   }
 }
+
 
 module.exports = { buildLogin, buildRegister, registerAccount }
