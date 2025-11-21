@@ -10,11 +10,33 @@
 
     <h1><%= title %></h1>
 
+    <!-- EMAIL -->
     <label for="account_email">Email</label>
-    <input type="email" id="account_email" name="account_email" required>
+    <input 
+      type="email" 
+      id="account_email" 
+      name="account_email" 
+      required
+    >
 
+    <!-- PASSWORD -->
     <label for="account_password">Password</label>
-    <input type="password" id="account_password" name="account_password" required>
+
+    <div class="password-rules">
+      Password must be at least 12 characters and contain:<br>
+      • 1 uppercase letter<br>
+      • 1 number<br>
+      • 1 special character
+    </div>
+
+    <input 
+      type="password" 
+      id="account_password" 
+      name="account_password" 
+      required
+      minlength="12"
+      pattern="^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\\s).{12,}$"
+    >
 
     <button type="submit">Login</button>
 

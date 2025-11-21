@@ -1,8 +1,16 @@
 <%- include("../partials/head", { title: title }) %>
 
-
 <!-- Flash Messages -->
 <%- messages() %>
+
+<% if (errors) { %>
+  <ul class="notice">
+    <% errors.array().forEach(error => { %>
+      <li><%= error.msg %></li>
+    <% }) %>
+  </ul>
+<% } %>
+
 
 <form action="/account/register" method="post" class="form">
    
@@ -40,16 +48,24 @@
 
   <!-- PASSWORD -->
   <label for="account_password">Password</label>
+
+  <!-- Password rules -->
+  <div class="password-rules">
+    Passwords must be at least 12 characters and contain:<br>
+    • 1 uppercase letter<br>
+    • 1 number<br>
+    • 1 special character
+  </div>
+
   <input 
     type="password" 
     id="account_password" 
     name="account_password" 
     required
     minlength="12"
-    placeholder="At least 12 chars, 1 capital, 1 number, 1 special"
+    pattern="^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\\s).{12,}$"
+    placeholder="Enter a strong password"
   >
 
   <button type="submit">Register</button>
 </form>
-
-

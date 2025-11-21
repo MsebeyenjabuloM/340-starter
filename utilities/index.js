@@ -80,4 +80,23 @@ Util.handleErrors = fn => (req, res, next) =>
   Promise.resolve(fn(req, res, next)).catch(next)
 
 
+/* **************************************
+ * Build the classification <select> list
+ ************************************** */
+Util.buildClassificationList = async function (selectedId = null) {
+  let data = await invModel.getClassifications()
+  let list = '<select name="classification_id" id="classification_id" required>'
+  list += '<option value="">Choose a Classification</option>'
+
+  data.rows.forEach(row => {
+    const selected = row.classification_id == selectedId ? "selected" : ""
+    list += `<option value="${row.classification_id}" ${selected}>${row.classification_name}</option>`
+  })
+
+  list += "</select>"
+  return list
+}
+
+
+
 module.exports = Util

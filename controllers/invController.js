@@ -31,9 +31,7 @@ invCont.buildDetailView = async function (req, res, next) {
       return next({ status: 404, message: "Vehicle not found" })
     }
 
-    
     const vehicleHTML = utilities.buildVehicleDetailHTML(vehicleData)
-
     let nav = await utilities.getNav()
 
     res.render("inventory/detail", {
@@ -46,7 +44,89 @@ invCont.buildDetailView = async function (req, res, next) {
   }
 }
 
+/* ***************************
+ *  Build management view
+ * ************************** */
+invCont.buildManagement = async function (req, res, next) {
+  let nav = await utilities.getNav()
+  res.render("inventory/management", {
+    title: "Inventory Management",
+    nav,
+  })
+}
 
+/* ***************************
+ *  Build add classification view
+ * ************************** */
+invCont.buildAddClassification = async function (req, res, next) {
+  let nav = await utilities.getNav()
+  res.render("inventory/add-classification", {
+    title: "Add Classification",
+    nav,
+    errors: null,
+  })
+}
 
+/* ***************************
+ *  Process adding a new classification
+ * ************************** */
+invCont.addClassification = async function (req, res, next) {
+  try {
+    const { classification_name } = req.body
+    const result = await invModel.addClassification(classification_name)
+    req.flash("success", `Classification "${classification_name}" added successfully!`)
+    res.redirect("/inv")
+  } catch (error) {
+    req.flash("error", "Error adding classification")
+    res.redirect("/inv/add-classification")
+  }
+}
+
+/* ***************************
+ *  Build add inventory view
+ * ************************** */
+invCont.buildAddInventory = async function (req, res, next) {
+  let nav = await utilities.getNav()
+  const classificationList = await utilities.buildClassificationList()
+  res.render("inventory/add-inventory", {
+    title: "Add Vehicle",
+    nav,
+    classificationList,
+    errors: null
+  })
+}
+
+/* ***************************
+ *  Process adding a new vehicle
+ * ************************** */
+invCont.addInventory = async function (req, res, next) {
+  try {
+    const {
+      inv_make,
+      inv_model,
+      classification_id,
+      inv_description,
+      inv_price,
+      inv_image,
+      inv_thumbnail
+    } = req.body
+
+    const result = await invModel.addInventory({
+      inv_make,
+      inv_model,
+      classification_id,
+      inv_description,
+      inv_price,
+      inv_image,
+      inv_thumbnail
+    })
+
+    req.flash("success", `Vehicle "${inv_make} ${inv_model}" added successfully!`)
+    res.redirect("/inv")
+  } catch (error) {
+    req.flash("error", "Error adding vehicle")
+    res.redirect("/inv/add-inventory")
+  }
+}
 
 module.exports = invCont

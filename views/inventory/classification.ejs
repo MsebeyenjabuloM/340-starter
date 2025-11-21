@@ -1,14 +1,11 @@
-<!-- Content Heading-->
- <% if (title) { %>
+<%- include("../partials/head", { title: title }) %>
+
+<%- nav %>
+
+<%- messages() %>
+
 <h1><%= title %></h1>
-<% } else {
-  res.redirect('/')
-} %>
 
-<!-- Message Block-->
-<%# messages() %>
-
-<!-- Inventory Items Display -->
-<%- grid %>
-
-
+<div>
+  <%- grid %>
+</div>
