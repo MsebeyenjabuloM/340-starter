@@ -34,8 +34,10 @@ router.post(
 // Default account management view
 router.get(
   "/",
+  utilities.checkLogin,
   utilities.handleErrors(accountController.buildAccountManagement)
 )
+
 
 
 module.exports = router
