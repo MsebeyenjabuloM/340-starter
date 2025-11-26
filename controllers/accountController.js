@@ -2,9 +2,12 @@
 *  Deliver Login View
 **************************************** */
 const jwt = require("jsonwebtoken")
+const bcrypt = require("bcryptjs")
+
 require("dotenv").config()
 const utilities = require("../utilities/")
 const accountModel = require("../models/account-model")
+
 
 async function buildLogin(req, res, next) {
   let nav = await utilities.getNav()
@@ -34,40 +37,39 @@ async function registerAccount(req, res, next) {
   try {
     let nav = await utilities.getNav()
 
-    const { 
-      account_firstname: first_name, 
-      account_lastname: last_name, 
-      account_email: email, 
-      account_password: password 
+    const {
+      account_firstname: first_name,
+      account_lastname: last_name,
+      account_email: email,
+      account_password: password
     } = req.body
 
-    // Insert into DB
+    // ✅ HASH THE PASSWORD HERE
+    const bcrypt = require("bcryptjs")
+    const hashedPassword = await bcrypt.hash(password, 10)
+
+    // Insert hashed password into DB
     const regResult = await accountModel.registerAccount(
       first_name,
       last_name,
       email,
-      password
+      hashedPassword   //  <-- THIS IS NOW HASHED
     )
 
-    // LOG for debugging (inspect what the model returned)
     console.log("registerAccount -> regResult:", regResult)
 
-    // Consider success if regResult has a positive rowCount or rows length
     const success =
       (regResult && typeof regResult.rowCount === "number" && regResult.rowCount > 0) ||
       (regResult && Array.isArray(regResult.rows) && regResult.rows.length > 0)
 
     if (success) {
-      // use the first_name we collected earlier for the flash
       req.flash(
         "notice",
         `Congratulations, you're registered ${first_name}. Please log in.`
       )
-      // redirect to login so the flash message shows after a redirect
       return res.status(201).redirect("/account/login")
     }
 
-    // FAIL CASE: re-render register with sticky fields (so user doesn't lose input)
     req.flash("notice", "Sorry, the registration failed.")
     return res.status(501).render("account/register", {
       title: "Register",
@@ -82,14 +84,12 @@ async function registerAccount(req, res, next) {
     req.flash("notice", "An unexpected error occurred.")
     return res.status(500).render("account/register", {
       title: "Register",
-      nav,
+      nav: await utilities.getNav()
     })
   }
 }
 
-/* ****************************************
- *  Process login request
- * ************************************ */
+
 async function accountLogin(req, res) {
   let nav = await utilities.getNav()
   const { account_email, account_password } = req.body
@@ -101,48 +101,48 @@ async function accountLogin(req, res) {
     return res.status(400).render("account/login", {
       title: "Login",
       nav,
-      errors: null,
       account_email,
     })
   }
 
   try {
-    if (await bcrypt.compare(account_password, accountData.account_password)) {
-      delete accountData.account_password
+    const valid = await bcrypt.compare(account_password, accountData.password)
 
-      const accessToken = jwt.sign(
-        accountData,
-        process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: 3600 } // 1 hour
-      )
-
-      if (process.env.NODE_ENV === "development") {
-        res.cookie("jwt", accessToken, {
-          httpOnly: true,
-          maxAge: 3600 * 1000
-        })
-      } else {
-        res.cookie("jwt", accessToken, {
-          httpOnly: true,
-          secure: true,
-          maxAge: 3600 * 1000
-        })
-      }
-
-      return res.redirect("/account/")
-    } else {
-      req.flash("notice", "Please check your credentials and try again.")
+    if (!valid) {
+      req.flash("notice", "Incorrect email or password.")
       return res.status(400).render("account/login", {
         title: "Login",
         nav,
-        errors: null,
         account_email,
       })
     }
+
+    delete accountData.password
+
+    const accessToken = jwt.sign(
+      accountData,
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: 3600 }
+    )
+
+    res.cookie("jwt", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== "development",
+      maxAge: 3600 * 1000,
+    })
+
+    return res.redirect("/account/")
   } catch (error) {
-    throw new Error("Access Forbidden")
+    console.error("Login error:", error)
+    req.flash("notice", "Login failed. Please try again.")
+    return res.status(500).render("account/login", {
+      title: "Login",
+      nav,
+      account_email,
+    })
   }
 }
+
 
 /* ****************************************
  *  Deliver Account Management View
