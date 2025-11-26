@@ -57,6 +57,13 @@ router.get(
   utilities.handleErrors(invController.buildAddInventory)
 )
 
+// Edit inventory page (display form with current data)
+router.get(
+  "/edit/:inv_id",
+  utilities.handleErrors(invController.editInventoryView)
+)
+
+
 // Add inventory processing
 router.post(
   "/add-inventory",
