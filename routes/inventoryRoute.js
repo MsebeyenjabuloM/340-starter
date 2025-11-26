@@ -17,6 +17,12 @@ router.get(
   utilities.handleErrors(invController.buildDetailView)
 )
 
+// Inventory JSON endpoint for AJAX
+router.get(
+  "/getInventory/:classification_id",
+  utilities.handleErrors(invController.getInventoryJSON)
+)
+
 // Intentional 500 test
 router.get(
   "/error500",

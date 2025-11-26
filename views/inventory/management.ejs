@@ -5,7 +5,24 @@
 
 <h1><%= title %></h1>
 
+<!-- Management Links -->
 <ul>
   <li><a href="/inv/add-classification">Add New Classification</a></li>
   <li><a href="/inv/add-inventory">Add New Vehicle</a></li>
 </ul>
+
+<hr>
+
+<!-- New Required Functionality -->
+<h2>Manage Inventory</h2>
+<p>Select a classification to see the inventory items.</p>
+
+<!-- The dropdown built in the controller using utilities.buildClassificationList() -->
+<%- classificationSelect %>
+
+<!-- Table where JS will load the vehicles -->
+<table class="inventory-display" id="inventoryDisplay"></table>
+
+<noscript>JavaScript must be enabled to use this page.</noscript>
+
+<script src="/js/inventory.js"></script>

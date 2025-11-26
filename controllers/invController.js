@@ -36,7 +36,7 @@ invCont.buildDetailView = async function (req, res, next) {
 
     res.render("inventory/detail", {
       title: `${vehicleData.inv_make} ${vehicleData.inv_model}`,
-      vehicleHTML,   
+      vehicleHTML,
       nav,
     })
   } catch (err) {
@@ -49,9 +49,14 @@ invCont.buildDetailView = async function (req, res, next) {
  * ************************** */
 invCont.buildManagement = async function (req, res, next) {
   let nav = await utilities.getNav()
+
+  // Add classification list for AJAX inventory selection
+  const classificationSelect = await utilities.buildClassificationList()
+
   res.render("inventory/management", {
     title: "Inventory Management",
     nav,
+    classificationSelect, // ← Important!
   })
 }
 
@@ -126,6 +131,20 @@ invCont.addInventory = async function (req, res, next) {
   } catch (error) {
     req.flash("error", "Error adding vehicle")
     res.redirect("/inv/add-inventory")
+  }
+}
+
+/* ***************************
+ *  Return Inventory by Classification As JSON
+ * ************************** */
+invCont.getInventoryJSON = async (req, res, next) => {
+  const classification_id = parseInt(req.params.classification_id)
+  const invData = await invModel.getInventoryByClassificationId(classification_id)
+
+  if (invData && invData.length > 0 && invData[0].inv_id) {
+    return res.json(invData)
+  } else {
+    next(new Error("No data returned"))
   }
 }
 
