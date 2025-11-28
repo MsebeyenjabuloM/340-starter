@@ -12,7 +12,8 @@
   </ul>
 <% } %>
 
-<form action="/inv/update" method="post" class="form">
+<form id="updateForm" action="/inv/update" method="post" class="form">
+  <!-- Hidden ID field (only one needed) -->
   <input type="hidden" name="inv_id" value="<%= inv_id %>">
 
   <label for="inv_make">Make</label>
@@ -37,7 +38,11 @@
   <%- classificationSelect %>
 
   <label for="inv_description">Description</label>
-  <textarea name="inv_description" id="inv_description" required><%= typeof inv_description != 'undefined' ? inv_description : '' %></textarea>
+  <textarea 
+    name="inv_description" 
+    id="inv_description" 
+    required
+  ><%= typeof inv_description != 'undefined' ? inv_description : '' %></textarea>
 
   <label for="inv_price">Price</label>
   <input 
@@ -99,5 +104,10 @@
     value="<%= typeof inv_color != 'undefined' ? inv_color : '' %>"
   >
 
-  <button type="submit">Update Vehicle</button>
+  <!-- Submit button must start disabled -->
+  <button type="submit" disabled>Update Vehicle</button>
+
 </form>
+
+<!-- Link the update-blocking JavaScript file -->
+<script src="/js/inv-update.js"></script>

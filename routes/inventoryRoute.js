@@ -57,12 +57,11 @@ router.get(
   utilities.handleErrors(invController.buildAddInventory)
 )
 
-// Edit inventory page (display form with current data)
+// Edit inventory page
 router.get(
   "/edit/:inv_id",
   utilities.handleErrors(invController.editInventoryView)
 )
-
 
 // Add inventory processing
 router.post(
@@ -70,6 +69,14 @@ router.post(
   invValidate.inventoryRules(),
   invValidate.checkInventoryData,
   utilities.handleErrors(invController.addInventory)
+)
+
+// Update inventory processing
+router.post(
+  "/update",
+  invValidate.inventoryRules(),                // reuse inventory rules
+  invController.checkUpdateData,               // controller-level validation handler
+  utilities.handleErrors(invController.updateInventory)
 )
 
 module.exports = router

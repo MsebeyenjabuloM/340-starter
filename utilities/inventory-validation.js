@@ -82,7 +82,7 @@ validate.inventoryRules = () => {
 }
 
 /* ***************************
- * Check inventory data
+ * Check inventory data (ADD)
  * ************************** */
 validate.checkInventoryData = async (req, res, next) => {
   const {
@@ -106,6 +106,47 @@ validate.checkInventoryData = async (req, res, next) => {
       nav,
       errors,
       classificationList,
+      inv_make,
+      inv_model,
+      classification_id,
+      inv_description,
+      inv_price,
+      inv_image,
+      inv_thumbnail,
+    })
+  }
+
+  next()
+}
+
+/* ***************************
+ * Check UPDATE inventory data (NEW FUNCTION)
+ * ************************** */
+validate.checkUpdateData = async (req, res, next) => {
+  const {
+    inv_id,
+    inv_make,
+    inv_model,
+    classification_id,
+    inv_description,
+    inv_price,
+    inv_image,
+    inv_thumbnail
+  } = req.body
+
+  let errors = validationResult(req)
+
+  if (!errors.isEmpty()) {
+    let nav = await utilities.getNav()
+    let classificationList = await utilities.buildClassificationList(classification_id)
+    const itemName = `${inv_make} ${inv_model}`
+
+    return res.render("inventory/edit-inventory", {
+      title: "Edit " + itemName,
+      nav,
+      errors,
+      classificationList,
+      inv_id,
       inv_make,
       inv_model,
       classification_id,

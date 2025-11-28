@@ -1,5 +1,6 @@
 const invModel = require("../models/inventory-model")
 const utilities = require("../utilities/")
+const { validationResult } = require("express-validator")
 
 const invCont = {}
 
@@ -49,14 +50,11 @@ invCont.buildDetailView = async function (req, res, next) {
  * ************************** */
 invCont.buildManagement = async function (req, res, next) {
   let nav = await utilities.getNav()
-
-  // Add classification list for AJAX inventory selection
   const classificationSelect = await utilities.buildClassificationList()
-
   res.render("inventory/management", {
     title: "Inventory Management",
     nav,
-    classificationSelect, // ← Important!
+    classificationSelect,
   })
 }
 
@@ -152,18 +150,14 @@ invCont.getInventoryJSON = async (req, res, next) => {
  *  Build edit inventory view
  * ************************** */
 invCont.editInventoryView = async function (req, res, next) {
-  const inv_id = parseInt(req.params.inv_id)  // Convert URL param to integer
-  let nav = await utilities.getNav()          // Build the navigation
+  const inv_id = parseInt(req.params.inv_id)
+  let nav = await utilities.getNav()
 
-  // Get the inventory data for the selected item
   const itemData = await invModel.getInventoryById(inv_id)
-
-  // Build the classification dropdown and pre-select the item's current classification
   const classificationSelect = await utilities.buildClassificationList(itemData.classification_id)
 
   const itemName = `${itemData.inv_make} ${itemData.inv_model}`
 
-  // Render the "edit-inventory" view with pre-filled data
   res.render("./inventory/edit-inventory", {
     title: "Edit " + itemName,
     nav,
@@ -183,5 +177,87 @@ invCont.editInventoryView = async function (req, res, next) {
   })
 }
 
+/* ****************************************
+ *  Validation Error Handler for Update
+ **************************************** */
+invCont.checkUpdateData = async function (req, res, next) {
+  const errors = validationResult(req)
+
+  if (!errors.isEmpty()) {
+    let nav = await utilities.getNav()
+    const classificationSelect = await utilities.buildClassificationList(req.body.classification_id)
+
+    return res.render("./inventory/edit-inventory", {
+      title: "Edit " + req.body.inv_make + " " + req.body.inv_model,
+      nav,
+      errors,
+      classificationSelect,
+      ...req.body
+    })
+  }
+
+  next()
+}
+
+/* ***************************
+ *  Update Inventory Data
+ * ************************** */
+invCont.updateInventory = async function (req, res, next) {
+  let nav = await utilities.getNav()
+  const {
+    inv_id,
+    inv_make,
+    inv_model,
+    inv_description,
+    inv_image,
+    inv_thumbnail,
+    inv_price,
+    inv_year,
+    inv_miles,
+    inv_color,
+    classification_id,
+  } = req.body
+
+  const updateResult = await invModel.updateInventory(
+    inv_id,
+    inv_make,
+    inv_model,
+    inv_description,
+    inv_image,
+    inv_thumbnail,
+    inv_price,
+    inv_year,
+    inv_miles,
+    inv_color,
+    classification_id
+  )
+
+  if (updateResult) {
+    const itemName = updateResult.inv_make + " " + updateResult.inv_model
+    req.flash("notice", `The ${itemName} was successfully updated.`)
+    res.redirect("/inv/")
+  } else {
+    const classificationSelect = await utilities.buildClassificationList(classification_id)
+    const itemName = `${inv_make} ${inv_model}`
+    req.flash("notice", "Sorry, the insert failed.")
+    res.status(501).render("inventory/edit-inventory", {
+      title: "Edit " + itemName,
+      nav,
+      classificationSelect,
+      errors: null,
+      inv_id,
+      inv_make,
+      inv_model,
+      inv_year,
+      inv_description,
+      inv_image,
+      inv_thumbnail,
+      inv_price,
+      inv_miles,
+      inv_color,
+      classification_id
+    })
+  }
+}
 
 module.exports = invCont
