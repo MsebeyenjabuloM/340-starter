@@ -11,7 +11,11 @@ Util.getNav = async function (req, res, next) {
 
   list += '<li><a href="/" title="Home page">Home</a></li>'
   data.rows.forEach((row) => {
-    list += `<li><a href="/inv/type/${row.classification_id}" title="See our inventory of ${row.classification_name} vehicles">${row.classification_name}</a></li>`
+    list += `<li>
+               <a href="/inv/type/${row.classification_id}" title="See our inventory of ${row.classification_name} vehicles">
+                 ${row.classification_name}
+               </a>
+             </li>`
   })
   list += '</ul>'
   return list
@@ -25,7 +29,7 @@ Util.buildClassificationGrid = async function (data) {
   let gridHTML = ""
 
   if (data.length > 0) {
-    gridHTML = '<div class="vehicle-grid">' // container for the cards
+    gridHTML = '<div class="vehicle-grid">' 
 
     data.forEach(vehicle => {
       const price = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(vehicle.inv_price)

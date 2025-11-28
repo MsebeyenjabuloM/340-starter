@@ -5,8 +5,6 @@ const utilities = require("../utilities")
 const accountController = require("../controllers/accountController")
 const regValidate = require("../utilities/account-validation")
 
-
-
 // GET /account/login 
 router.get("/login", utilities.handleErrors(accountController.buildLogin))
 
@@ -22,8 +20,6 @@ router.post(
 router.get("/register", utilities.handleErrors(accountController.buildRegister))
 
 // POST /account/register 
-// router.post("/register", utilities.handleErrors(accountController.registerAccount))//
-// Process registration data
 router.post(
   "/register",
   regValidate.registationRules(),
@@ -38,6 +34,41 @@ router.get(
   utilities.handleErrors(accountController.buildAccountManagement)
 )
 
+/* ****************************************
+ * Task 4: Account Update Routes
+ **************************************** */
+
+// GET account update form
+router.get(
+  "/update",
+  utilities.checkLogin,
+  utilities.handleErrors(accountController.buildAccountUpdate)
+)
+
+// POST account info update
+router.post(
+  "/update",
+  utilities.checkLogin,
+  regValidate.accountUpdateRules(),  
+  regValidate.checkUpdateData,       
+  utilities.handleErrors(accountController.updateAccountInfo)
+)
+
+// POST password change
+router.post(
+  "/update-password",
+  utilities.checkLogin,
+  regValidate.passwordRules(),      
+  regValidate.checkPasswordData,    
+  utilities.handleErrors(accountController.updatePassword)
+)
+
+// GET /account/logout
+router.get(
+  "/logout",
+  utilities.checkLogin,
+  utilities.handleErrors(accountController.logoutAccount)
+)
 
 
 module.exports = router

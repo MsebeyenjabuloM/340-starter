@@ -7,3 +7,19 @@
 <h1>Your Account</h1>
 
 <p>You're logged in.</p>
+
+<% if (account_firstname) { %>
+  <h2>Welcome <%= account_firstname %></h2>
+<% } %>
+
+<!-- Show inventory management link only for Employee/Admin -->
+<% if (account_type === 'Employee' || account_type === 'Admin') { %>
+  <h3>Inventory Management</h3>
+  <p><a href="/inv/">Go to Inventory Management</a></p>
+<% } %>
+
+<!-- Update account link for all users -->
+<p><a href="/account/update">Update Account Information</a></p>
+
+
+

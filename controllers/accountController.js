@@ -146,16 +146,147 @@ async function accountLogin(req, res) {
 
 /* ****************************************
  *  Deliver Account Management View
- * ************************************ */
+ **************************************** */
 async function buildAccountManagement(req, res) {
   let nav = await utilities.getNav()
+
+  let account_firstname = null
+  let account_type = null
+  let account_id = null
+
+  const token = req.cookies.jwt
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
+      account_firstname = decoded.account_firstname
+      account_type = decoded.account_type
+      account_id = decoded.account_id
+    } catch (err) {
+      console.error("JWT verification error:", err)
+    }
+  }
+
   res.render("account/management", {
     title: "Account Management",
     nav,
-    errors: null
+    errors: null,
+    account_firstname,
+    account_type,
+    account_id
   })
 }
 
 
+/* ****************************************
+ * Deliver Account Update View
+ **************************************** */
+async function buildAccountUpdate(req, res) {
+  let nav = await utilities.getNav()
+  const token = req.cookies.jwt
+  let account_id = null, account_firstname = "", account_lastname = "", account_email = ""
 
-module.exports = { buildLogin, buildRegister, registerAccount, accountLogin, buildAccountManagement }
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
+      account_id = decoded.account_id
+      account_firstname = decoded.account_firstname
+      account_lastname = decoded.account_lastname
+      account_email = decoded.account_email
+    } catch (err) {
+      console.error("JWT verification error:", err)
+    }
+  }
+
+  res.render("account/update-account", {
+    title: "Update Account Information",
+    nav,
+    errors: null,
+    account_id,
+    account_firstname,
+    account_lastname,
+    account_email
+  })
+}
+
+/* ****************************************
+ * Process Account Info Update
+ **************************************** */
+async function updateAccountInfo(req, res) {
+  const { account_id, account_firstname, account_lastname, account_email } = req.body
+  let nav = await utilities.getNav()
+
+  try {
+    const result = await accountModel.updateAccountInfo(account_id, account_firstname, account_lastname, account_email)
+
+    if (result) {
+      req.flash("success", "Account information updated successfully.")
+    } else {
+      req.flash("error", "Failed to update account information.")
+    }
+
+    return res.redirect("/account/")
+  } catch (err) {
+    console.error(err)
+    req.flash("error", "An unexpected error occurred.")
+    return res.redirect("/account/update")
+  }
+}
+
+/* ****************************************
+ * Process Password Change
+ **************************************** */
+async function updatePassword(req, res) {
+  const { account_id, account_password } = req.body
+  let nav = await utilities.getNav()
+
+  try {
+    const hashedPassword = await bcrypt.hash(account_password, 10)
+    const result = await accountModel.updatePassword(account_id, hashedPassword)
+
+    if (result) {
+      req.flash("success", "Password updated successfully.")
+    } else {
+      req.flash("error", "Failed to update password.")
+    }
+
+    return res.redirect("/account/")
+  } catch (err) {
+    console.error(err)
+    req.flash("error", "An unexpected error occurred.")
+    return res.redirect("/account/update")
+  }
+}
+
+/* ****************************************
+* Deliver Logout
+**************************************** */
+async function logoutAccount(req, res) {
+  try {
+    // Clear the JWT cookie
+    res.clearCookie("jwt", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== "development"
+    })
+
+    // Redirect to home page
+    req.flash("success", "You have been logged out.")
+    return res.redirect("/")
+  } catch (err) {
+    console.error("Logout error:", err)
+    req.flash("error", "An unexpected error occurred during logout.")
+    return res.redirect("/account/")
+  }
+}
+
+
+module.exports = { 
+  buildLogin, 
+  buildRegister, 
+  registerAccount, 
+  accountLogin, 
+  buildAccountManagement,
+  buildAccountUpdate,
+  updateAccountInfo,
+  updatePassword,
+  logoutAccount
+}
