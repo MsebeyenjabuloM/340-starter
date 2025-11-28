@@ -38,8 +38,6 @@ async function getVehicleById(inv_id) {
   }
 }
 
-
-
 async function addClassification(classification_name) {
   const sql = "INSERT INTO public.classification (classification_name) VALUES ($1) RETURNING *"
   const result = await pool.query(sql, [classification_name])
@@ -56,7 +54,6 @@ async function addInventory(vehicleData) {
   return result.rows[0]
 }
 
-
 async function getInventoryById(inv_id) {
   try {
     const data = await pool.query(
@@ -69,7 +66,6 @@ async function getInventoryById(inv_id) {
     throw error
   }
 }
-
 
 /* ***************************
  *  Update Inventory Data
@@ -109,7 +105,19 @@ async function updateInventory(
   }
 }
 
-
+/* ***************************
+ *  Delete Inventory Item
+ * ************************** */
+async function deleteInventoryItem(inv_id) {
+  try {
+    const sql = 'DELETE FROM public.inventory WHERE inv_id = $1'
+    const result = await pool.query(sql, [inv_id])
+    return result.rowCount // 1 if deleted, 0 if not
+  } catch (error) {
+    console.error("Delete Inventory Error: " + error)
+    return 0
+  }
+}
 
 module.exports = { 
   getClassifications, 
@@ -118,6 +126,6 @@ module.exports = {
   addClassification,
   addInventory,
   getInventoryById,
-  updateInventory
+  updateInventory,
+  deleteInventoryItem
 }
-

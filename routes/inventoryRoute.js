@@ -74,9 +74,25 @@ router.post(
 // Update inventory processing
 router.post(
   "/update",
-  invValidate.inventoryRules(),                // reuse inventory rules
-  invController.checkUpdateData,               // controller-level validation handler
+  invValidate.inventoryRules(),                
+  invController.checkUpdateData,               
   utilities.handleErrors(invController.updateInventory)
+)
+
+/* ****************************************
+ * DELETE ROUTES ADDED FOR DELETE ACTIVITY
+ **************************************** */
+
+// Build delete confirmation view
+router.get(
+  "/delete/:inv_id",
+  utilities.handleErrors(invController.buildDeleteConfirmation)
+)
+
+// Process inventory delete
+router.post(
+  "/delete",
+  utilities.handleErrors(invController.deleteInventoryItem)
 )
 
 module.exports = router
