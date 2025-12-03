@@ -153,6 +153,7 @@ async function buildAccountManagement(req, res) {
   let account_firstname = null
   let account_type = null
   let account_id = null
+  let reviews = []
 
   const token = req.cookies.jwt
   if (token) {
@@ -161,6 +162,9 @@ async function buildAccountManagement(req, res) {
       account_firstname = decoded.account_firstname
       account_type = decoded.account_type
       account_id = decoded.account_id
+
+      // Fetch reviews by logged-in user
+      reviews = await reviewModel.getReviewsByAccountId(account_id)
     } catch (err) {
       console.error("JWT verification error:", err)
     }
@@ -172,7 +176,8 @@ async function buildAccountManagement(req, res) {
     errors: null,
     account_firstname,
     account_type,
-    account_id
+    account_id,
+    reviews, // <-- added
   })
 }
 

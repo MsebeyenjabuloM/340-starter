@@ -1,0 +1,27 @@
+<form action="/review/add" method="POST" class="review-form">
+  <h3>Add Your Review</h3>
+  
+  <!-- Screen name: first initial + last name -->
+  <label for="screen_name">Your Screen Name</label>
+  <input 
+    type="text" 
+    id="screen_name" 
+    value="<%= account_firstname.charAt(0) + account_lastname %>" 
+    readonly
+  >
+
+  <!-- Hidden fields -->
+  <input type="hidden" name="inv_id" value="<%= vehicleData.inv_id %>">
+  <input type="hidden" name="account_id" value="<%= account_id %>">
+
+  <!-- Review text -->
+  <label for="review_text">Review</label>
+  <textarea 
+    name="review_text" 
+    id="review_text" 
+    rows="4" 
+    required
+  ></textarea>
+
+  <button type="submit">Submit Review</button>
+</form>

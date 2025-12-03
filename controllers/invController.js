@@ -1,7 +1,7 @@
 const invModel = require("../models/inventory-model")
 const utilities = require("../utilities/")
 const { validationResult } = require("express-validator")
-
+const reviewModel = require("../models/review-model");
 const invCont = {}
 
 /* ***************************
@@ -35,10 +35,14 @@ invCont.buildDetailView = async function (req, res, next) {
     const vehicleHTML = utilities.buildVehicleDetailHTML(vehicleData)
     let nav = await utilities.getNav()
 
+    // Fetch reviews for this vehicle
+    const reviews = await reviewModel.getReviewsByInventoryId(inv_id)
+
     res.render("inventory/detail", {
       title: `${vehicleData.inv_make} ${vehicleData.inv_model}`,
       vehicleHTML,
       nav,
+      reviews, // <-- added
     })
   } catch (err) {
     next(err)

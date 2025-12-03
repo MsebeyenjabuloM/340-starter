@@ -1,6 +1,31 @@
 <h1><%= title %></h1>
 
-<!-- The vehicle detail HTML we built in utilities -->
+<!-- The vehicle detail HTML -->
 <div id="vehicle-detail">
   <%- vehicleHTML %>
 </div>
+
+
+<!-- The review section -->
+<section id="reviews">
+  <h2>Reviews</h2>
+
+  <% if (reviews && reviews.length > 0) { %>
+    <ul class="review-list">
+      <% reviews.forEach((review) => { %>
+        <li class="review-item">
+          <p><strong><%= review.screen_name %>:</strong> <%= review.review_text %></p>
+          <p class="review-date"><%= new Date(review.review_date).toLocaleDateString() %></p>
+        </li>
+      <% }) %>
+    </ul>
+  <% } else { %>
+    <p>No reviews yet. Be the first to review this vehicle!</p>
+  <% } %>
+
+  <% if (account_id) { %>
+    <%- include('add-review') %>
+  <% } else { %>
+    <p>Please <a href="/account/login">log in</a> to write a review.</p>
+  <% } %>
+</section>
