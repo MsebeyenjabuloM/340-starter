@@ -6,6 +6,7 @@ const utilities = require("../utilities/")
  **************************************** */
 async function addReview(req, res) {
   const { review_text, inv_id, account_id } = req.body
+
   const result = await reviewModel.addReview(review_text, inv_id, account_id)
 
   if (result) {
@@ -14,7 +15,7 @@ async function addReview(req, res) {
     req.flash("notice", "Sorry, the review failed to post.")
   }
 
-  // Redirect back to the vehicle detail page
+  // Redirect back to vehicle detail page
   return res.redirect(`/inv/detail/${inv_id}`)
 }
 
@@ -32,17 +33,21 @@ async function buildEditReview(req, res, next) {
 
     const account_id = res.locals.accountData.account_id
 
+    // Block editing other users' reviews
     if (review.account_id !== account_id) {
       req.flash("error", "You can only edit your own reviews.")
       return res.redirect("/account")
     }
 
-    let nav = await utilities.getNav()
+    const nav = await utilities.getNav()
 
     res.render("inventory/edit-review", {
       title: "Edit Review",
       nav,
-      review,
+      review,         // <-- Sent to EJS
+      review_id: review.review_id,
+      review_text: review.review_text,
+      inv_id: review.inv_id,    // <--- important for redirect later
       errors: null
     })
   } catch (error) {
@@ -51,15 +56,14 @@ async function buildEditReview(req, res, next) {
 }
 
 /* ****************************************
- * Update Review
+ * Process Update Review
  **************************************** */
 async function updateReview(req, res) {
-  const { review_id, review_text } = req.body
+  const { review_id, review_text, inv_id } = req.body   // <-- inv_id added
 
   const review = await reviewModel.getReviewById(review_id)
   const account_id = res.locals.accountData.account_id
 
-  // Ownership check
   if (!review || review.account_id != account_id) {
     req.flash("notice", "You do not have permission to update this review.")
     return res.redirect("/account")
@@ -73,11 +77,12 @@ async function updateReview(req, res) {
     req.flash("notice", "The review update failed.")
   }
 
-  return res.redirect("/account")
+  // Redirect to vehicle detail page (better UX)
+  return res.redirect(`/inv/detail/${review.inv_id}`)
 }
 
 /* ****************************************
- * Delete Review
+ * Process Delete Review
  **************************************** */
 async function deleteReview(req, res) {
   const { review_id } = req.body
@@ -85,7 +90,6 @@ async function deleteReview(req, res) {
   const review = await reviewModel.getReviewById(review_id)
   const account_id = res.locals.accountData.account_id
 
-  // Ownership check
   if (!review || review.account_id != account_id) {
     req.flash("notice", "You do not have permission to delete this review.")
     return res.redirect("/account")
@@ -99,19 +103,18 @@ async function deleteReview(req, res) {
     req.flash("notice", "The review could not be deleted.")
   }
 
+  // Send user back to account page (correct)
   return res.redirect("/account")
 }
 
 /* ****************************************
  * Build Account Reviews View
- * Fetch reviews for the logged-in user
  **************************************** */
 async function buildAccountReviews(req, res, next) {
   try {
     const account_id = res.locals.accountData.account_id
-
     const reviews = await reviewModel.getReviewsByAccountId(account_id)
-    let nav = await utilities.getNav()
+    const nav = await utilities.getNav()
 
     res.render("account/account", {
       title: "Account Management",
@@ -134,4 +137,3 @@ module.exports = {
   deleteReview: utilities.handleErrors(deleteReview),
   buildAccountReviews: utilities.handleErrors(buildAccountReviews)
 }
-

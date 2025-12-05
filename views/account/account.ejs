@@ -1,13 +1,15 @@
 <h1>Account Management</h1>
 
 <!-- Display flash messages -->
-<% if (messages && messages.length > 0) { %>
-  <ul class="flash-messages">
-    <% messages.forEach(msg => { %>
-      <li><%= msg %></li>
-    <% }) %>
-  </ul>
-<% } %>
+<% const messages = Array.isArray(locals.notice) ? locals.notice : [locals.notice]; %>
+
+<ul class="flash-messages">
+  <% messages.forEach(msg => { %>
+    <li><%= msg %></li>
+  <% }) %>
+</ul>
+
+
 
 <h2>My Reviews</h2>
 

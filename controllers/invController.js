@@ -25,24 +25,37 @@ invCont.buildByClassificationId = async function (req, res, next) {
  * ************************** */
 invCont.buildDetailView = async function (req, res, next) {
   try {
-    const inv_id = req.params.inv_id
-    const vehicleData = await invModel.getVehicleById(inv_id)
+    const inv_id = parseInt(req.params.inv_id)
 
+    // Fetch vehicle
+    const vehicleData = await invModel.getVehicleById(inv_id)
     if (!vehicleData) {
       return next({ status: 404, message: "Vehicle not found" })
     }
 
+    // Build vehicle HTML
     const vehicleHTML = utilities.buildVehicleDetailHTML(vehicleData)
     let nav = await utilities.getNav()
 
-    // Fetch reviews for this vehicle
+    // Fetch reviews for this vehicle (returns array)
     const reviews = await reviewModel.getReviewsByInventoryId(inv_id)
+
+    // Get logged-in account data if present (res.locals.accountData set by middleware or on login)
+    const accountData = res.locals.accountData || null
+    const account_id = accountData ? accountData.account_id : null
+    const account_firstname = accountData ? accountData.account_firstname : null
+    const account_lastname = accountData ? accountData.account_lastname : null
 
     res.render("inventory/detail", {
       title: `${vehicleData.inv_make} ${vehicleData.inv_model}`,
       vehicleHTML,
       nav,
-      reviews, // <-- added
+      vehicleData,        // used by add-review partial (for inv_id)
+      reviews,
+      account_id,
+      account_firstname,
+      account_lastname,
+      errors: null
     })
   } catch (err) {
     next(err)

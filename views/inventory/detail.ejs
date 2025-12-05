@@ -5,7 +5,6 @@
   <%- vehicleHTML %>
 </div>
 
-
 <!-- The review section -->
 <section id="reviews">
   <h2>Reviews</h2>
@@ -16,6 +15,19 @@
         <li class="review-item">
           <p><strong><%= review.screen_name %>:</strong> <%= review.review_text %></p>
           <p class="review-date"><%= new Date(review.review_date).toLocaleDateString() %></p>
+
+          <!-- ⭐ SHOW EDIT/DELETE ONLY IF THE USER OWNS THIS REVIEW -->
+          <% if (account_id && account_id === review.account_id) { %>
+            <div class="review-actions">
+              <a href="/review/edit/<%= review.review_id %>">Edit</a>
+
+              <form action="/review/delete" method="POST" style="display:inline;">
+                <input type="hidden" name="review_id" value="<%= review.review_id %>">
+                <button type="submit">Delete</button>
+              </form>
+            </div>
+          <% } %>
+
         </li>
       <% }) %>
     </ul>
