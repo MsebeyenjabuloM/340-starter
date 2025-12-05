@@ -19,9 +19,8 @@ function addReviewRules() {
 function checkReviewErrors(req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    // If errors, store in locals for view rendering
     res.locals.errors = errors.array();
-    return res.redirect('back'); // go back to the page where the form was submitted
+    return res.redirect('back'); // goes back to the page where the form was submitted
   }
   next();
 }

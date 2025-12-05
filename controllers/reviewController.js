@@ -44,10 +44,10 @@ async function buildEditReview(req, res, next) {
     res.render("inventory/edit-review", {
       title: "Edit Review",
       nav,
-      review,         // <-- Sent to EJS
+      review,         
       review_id: review.review_id,
       review_text: review.review_text,
-      inv_id: review.inv_id,    // <--- important for redirect later
+      inv_id: review.inv_id,    
       errors: null
     })
   } catch (error) {
@@ -59,7 +59,7 @@ async function buildEditReview(req, res, next) {
  * Process Update Review
  **************************************** */
 async function updateReview(req, res) {
-  const { review_id, review_text, inv_id } = req.body   // <-- inv_id added
+  const { review_id, review_text, inv_id } = req.body   
 
   const review = await reviewModel.getReviewById(review_id)
   const account_id = res.locals.accountData.account_id
@@ -77,7 +77,7 @@ async function updateReview(req, res) {
     req.flash("notice", "The review update failed.")
   }
 
-  // Redirect to vehicle detail page (better UX)
+  
   return res.redirect(`/inv/detail/${review.inv_id}`)
 }
 

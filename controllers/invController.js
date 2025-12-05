@@ -50,7 +50,7 @@ invCont.buildDetailView = async function (req, res, next) {
       title: `${vehicleData.inv_make} ${vehicleData.inv_model}`,
       vehicleHTML,
       nav,
-      vehicleData,        // used by add-review partial (for inv_id)
+      vehicleData,        
       reviews,
       account_id,
       account_firstname,

@@ -5,7 +5,7 @@ require("dotenv").config()
 
 const utilities = require("../utilities/")
 const accountModel = require("../models/account-model")
-const reviewModel = require("../models/review-model") // <-- added
+const reviewModel = require("../models/review-model") 
 
 /* ****************************************
  * Deliver Login View
@@ -113,10 +113,8 @@ async function accountLogin(req, res) {
     })
   }
 
-  // remove password from object we will sign
   delete accountData.password
 
-  // create token payload using the keys other code expects:
   const tokenPayload = {
     account_id: accountData.account_id,
     account_firstname: accountData.first_name,
@@ -135,7 +133,7 @@ async function accountLogin(req, res) {
     maxAge: 3600 * 1000,
   })
 
-  // Save to locals for immediate / same-request use if needed
+  
   res.locals.accountData = tokenPayload
 
   return res.redirect("/account")
@@ -160,7 +158,7 @@ async function buildAccountManagement(req, res) {
       account_type = decoded.account_type
       account_id = decoded.account_id
 
-      // Fetch reviews by logged-in user (returns array)
+      // Fetch reviews by logged-in user 
       reviews = await reviewModel.getReviewsByAccountId(account_id)
     } catch (err) {
       console.error("JWT verification error:", err)
@@ -217,7 +215,6 @@ async function updateAccountInfo(req, res) {
   let nav = await utilities.getNav()
 
   try {
-    // Note: accountModel expects first_name/last_name columns
     const result = await accountModel.updateAccountInfo(account_id, account_firstname, account_lastname, account_email)
 
     if (result) {

@@ -17,7 +17,7 @@ router.post(
 router.get(
   "/edit/:review_id",
   utilities.checkLogin,
-  utilities.handleErrors(reviewController.buildEditReview) // match your controller
+  utilities.handleErrors(reviewController.buildEditReview) 
 );
 
 // Process review update
