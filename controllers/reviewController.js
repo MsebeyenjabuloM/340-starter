@@ -134,3 +134,4 @@ module.exports = {
   deleteReview: utilities.handleErrors(deleteReview),
   buildAccountReviews: utilities.handleErrors(buildAccountReviews)
 }
+
